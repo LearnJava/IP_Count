@@ -1,24 +1,14 @@
 package ru.konstantin
 
-import kotlinx.coroutines.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import java.util.stream.Collectors
 
+
+
 class TestMe {
-
-    fun compareTwoLists() {
-
-        val fileOne =
-            getFileToList("D:\\Temp\\ip_addresses\\test\\10000000_10000000_d7eb964f-36b4-4367-b69e-3d5165c0e04f.txt")
-        val fileTwo =
-            getFileToList("D:\\Temp\\ip_addresses\\test\\20000000_10000000_16201dbf-dc15-44ca-b93e-99f1743b129d.txt")
-
-        val result = fileOne?.minus(fileTwo)
-        println(result)
-    }
 
     fun getFilesFromFolder(absoutePath: String?): List<String>? {
         return Files.walk(Paths.get(absoutePath))
@@ -36,30 +26,44 @@ class TestMe {
     }
 }
 
-suspend fun main() {
+fun main(args: Array<String>) {
+    var ipCountInFile = args[0].toLong().toInt()
     val testMe = TestMe()
-    val files = testMe.getFilesFromFolder("D:\\Temp\\ip_addresses\\test")
+    val pathToFolder = "F:\\kostja\\Temp\\test\\$ipCountInFile"
+    val files = testMe.getFilesFromFolder(pathToFolder)
 
+    var fileCounter = 0
+    val startDate = Date().time
 //    val jobList = mutableListOf<Job>()
 
     if (files != null) {
         for ((indexMain, fileMain) in files.withIndex()) {
             var textMainFile: List<String> = testMe.getFileToList(fileMain)!!
             for ((index, file) in files.withIndex()) {
-                if (fileMain != file) {
-//                    val job = GlobalScope.launch(Dispatchers.IO) {
-
-                    var textFile: List<String> = testMe.getFileToList(file)!!
-                    textMainFile = textMainFile.minus(textFile)
-                    textFile = textFile.minus(textMainFile)
-                    println("$index $file mainFile has ${textFile.count()}")
-//                    }
-//                    jobList.add(job)
+                if (fileMain != file ) {
+                    val textFile: List<String> = testMe.getFileToList(file)!!
+                    if (textMainFile.isEmpty()) {
+                        println("$fileMain is Empty. No more compares.")
+                        break
+                    }
+                    if (textFile.isNotEmpty()) {
+                        textMainFile = textMainFile.minus(textFile)
+                        println("$index $file mainFile has ${textMainFile.count()}")
+                    } else {
+                        println("File $file is empty.")
+                    }
                 }
             }
             println(indexMain)
+            fileCounter += textMainFile.count()
+            println("Common counter files = $fileCounter")
+            if (textMainFile.count() != ipCountInFile) {
+                saveIPsToFile("$pathToFolder\\${fileMain.substringAfterLast("\\")}", textMainFile.map { ip -> MyIp(ip.split(".").map { it.toUByte() }) })
+            }
+            println()
         }
-//        jobList.joinAll()
+        println("Whole time is ${Date().time - startDate}")
+        println()
     }
 
 //    TestMe().compareTwoLists()
