@@ -9,34 +9,31 @@ import java.util.*
 
 class FileWork {
 
-    @OptIn(ObsoleteCoroutinesApi::class, DelicateCoroutinesApi::class)
     suspend fun getUniqIPs(path: String) {
         var counter: Long = 1
         val startDate = Date().time
 
-        val ipList = mutableListOf<String>()
+//        val ipList = mutableListOf<String>()
 
         val jobs = mutableListOf<Job>()
 
-        val fixedThread = newFixedThreadPoolContext(1_000, "myThread----------->")
+//        val fixedThread = newFixedThreadPoolContext(100_000, "myThread----------->")
 
         createNeededFiles(path)
         try {
             val sourceLine = Files.lines(Paths.get("$path\\ip_addresses"))
             sourceLine.forEach { ip: String ->
-                ipList.add(ip)
+//                ipList.add(ip)
+                val job = GlobalScope.launch(Dispatchers.IO) {
+                    addStringToFile("$path/test/ip_group_files/${ip.substringBefore(".")}.txt", ip)
+//                    println("Added to file $ip")
+                }
+                jobs.add(job)
 
                 if (counter % 1_000_000 == 0L) {
-                    val tempList = ipList.toList()
-                    val job = GlobalScope.launch(fixedThread) {
-                        for (oneIp in tempList) {
-                            addStringToFile("$path/test/ip_group_files/${oneIp.substringBefore(".")}.txt", oneIp)
-//                    println("Added to file $ip")
-                        }
-                    }
+
                     println("Handled $counter ips")
-                    ipList.clear()
-                    jobs.add(job)
+//                    ipList.clear()
                 }
 
                 counter++
