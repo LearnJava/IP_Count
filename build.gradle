@@ -24,7 +24,8 @@ jar {
 
     manifest {
 //        attributes 'Main-Class': 'ru.konstantin.TestMeKt'
-        attributes 'Main-Class': 'ru.konstantin.RunMeKt'
+//        attributes 'Main-Class': 'ru.konstantin.RunMeKt'
+        attributes 'Main-Class': 'ru.konstantin.FileWorkKt'
     }
     from {
         configurations.runtimeClasspath.collect {
