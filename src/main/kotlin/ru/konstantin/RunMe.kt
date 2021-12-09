@@ -29,7 +29,7 @@ class RunMe {
                 if (partOfIps.size % ipCountInFile == 0) {
                     var tempList = partOfIps.toList()
                     GlobalScope.launch(Dispatchers.IO) {
-                        val fileName = createTempFile(counter, ("$path\\test\\$ipCountInFile") ?: "")
+                        val fileName = createTempFile(counter, ("$path\\test\\$ipCountInFile"))
                         tempList = tempList.sorted()
                         startEndParamsInFile.put(fileName.substringAfterLast("\\"), Pair(tempList.first(), tempList.last()))
                         println("${fileName.substringAfterLast("\\")} --> ${tempList.first()} - ${tempList.last()}")
